@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CronWatch — Get alerted when your cron jobs fail silently</title>
+  <meta name="description" content="CronWatch monitors scheduled jobs across Heroku Scheduler, GitHub Actions, crontab, AWS EventBridge, and more. Get alerted the moment a job misses its window or errors.">
+  <meta property="og:title" content="CronWatch — Cron job monitoring that actually alerts you">
+  <meta property="og:description" content="Scheduled jobs fail silently. CronWatch monitors every cron job and alerts you the moment one misses its window or errors.">
+  <meta property="og:url" content="https://lior-seats.github.io/cronwatch-waitlist/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CronWatch — Cron job monitoring that actually alerts you">
+  <meta name="twitter:description" content="Scheduled jobs fail silently. Get alerted when they miss their window.">
+  <link rel="canonical" href="https://lior-seats.github.io/cronwatch-waitlist/">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0f0a; color: #e2e8f0; line-height: 1.6; }
+    a { color: #68d391; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: 680px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* Hero */
+    .hero { background: linear-gradient(160deg, #0a0f0a 0%, #0d1f0d 50%, #0a0f0a 100%); padding: 5rem 1.5rem 4rem; text-align: center; border-bottom: 1px solid #1a2e1a; }
+    .eyebrow { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #276749; margin-bottom: 1.25rem; }
+    .hero h1 { font-size: 2.6rem; font-weight: 800; line-height: 1.2; color: #f7fafc; margin-bottom: 1.25rem; max-width: 580px; margin-left: auto; margin-right: auto; }
+    .hero h1 em { font-style: normal; color: #68d391; }
+    .hero p { font-size: 1.1rem; color: #94a3b8; margin-bottom: 2.5rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .form-box { max-width: 440px; margin: 0 auto; }
+    .form-row { display: flex; gap: 0.5rem; }
+    .form-row input[type="email"] { flex: 1; background: #0d1f0d; border: 1px solid #276749; color: #f7fafc; border-radius: 7px; padding: 0.75rem 1rem; font-size: 0.95rem; outline: none; transition: border-color 0.15s; }
+    .form-row input::placeholder { color: #4a5568; }
+    .form-row input:focus { border-color: #38a169; }
+    .form-row button { background: #276749; color: #fff; border: none; padding: 0.75rem 1.5rem; border-radius: 7px; font-weight: 700; font-size: 0.95rem; cursor: pointer; white-space: nowrap; transition: background 0.15s; }
+    .form-row button:hover { background: #2f855a; }
+    .form-note { font-size: 0.8rem; color: #4a5568; margin-top: 0.75rem; text-align: center; }
+    .form-msg { font-size: 0.88rem; margin-top: 0.5rem; text-align: center; min-height: 1.2rem; }
+
+    /* Pain */
+    .pain { padding: 4rem 1.5rem; background: #0d1207; border-bottom: 1px solid #1a2e1a; }
+    .pain-scenario { background: #0f1a0f; border: 1px solid #1a2e1a; border-radius: 10px; padding: 1.75rem; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 0.85rem; color: #94a3b8; margin: 2rem 0; line-height: 1.9; }
+    .pain-scenario .label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #4a5568; margin-bottom: 0.5rem; }
+    .pain-scenario .bad  { color: #f87171; }
+    .pain-scenario .good { color: #68d391; }
+
+    /* Features */
+    .features { padding: 4rem 1.5rem; border-bottom: 1px solid #1a2e1a; }
+    .features h2 { font-size: 1.4rem; font-weight: 700; color: #f7fafc; margin-bottom: 2.5rem; text-align: center; }
+    .feature-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 600px) { .feature-grid { grid-template-columns: 1fr; } .hero h1 { font-size: 2rem; } }
+    .feature { background: #0f1a0f; border: 1px solid #1a2e1a; border-radius: 10px; padding: 1.5rem; }
+    .feature .icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .feature h3 { font-size: 0.95rem; font-weight: 700; color: #f7fafc; margin-bottom: 0.4rem; }
+    .feature p { font-size: 0.85rem; color: #64748b; line-height: 1.6; }
+
+    /* Platforms */
+    .platforms { padding: 3rem 1.5rem; background: #0d1207; border-bottom: 1px solid #1a2e1a; text-align: center; }
+    .platforms h2 { font-size: 1.1rem; color: #a0aec0; margin-bottom: 1.5rem; font-weight: 500; }
+    .platform-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+    .pill { background: #1a2e1a; border: 1px solid #276749; color: #9ae6b4; border-radius: 20px; padding: 0.3rem 1rem; font-size: 0.85rem; font-weight: 600; }
+
+    /* Pricing */
+    .pricing { padding: 4rem 1.5rem; border-bottom: 1px solid #1a2e1a; text-align: center; }
+    .pricing h2 { font-size: 1.4rem; font-weight: 700; color: #f7fafc; margin-bottom: 0.5rem; }
+    .pricing p { color: #94a3b8; margin-bottom: 2rem; }
+    .price-tag { font-size: 3rem; font-weight: 800; color: #68d391; }
+    .price-sub { color: #64748b; font-size: 0.9rem; margin-top: 0.25rem; }
+
+    /* Bottom CTA */
+    .bottom-cta { padding: 4rem 1.5rem; text-align: center; background: linear-gradient(160deg, #0a0f0a 0%, #0d1f0d 100%); }
+    .bottom-cta h2 { font-size: 1.5rem; font-weight: 700; color: #f7fafc; margin-bottom: 1rem; }
+
+    footer { text-align: center; padding: 2rem 1.5rem; color: #2d4a2d; font-size: 0.82rem; border-top: 1px solid #0d1207; }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="container">
+    <div class="eyebrow">CronWatch</div>
+    <h1>Your cron jobs fail silently.<br><em>We tell you immediately.</em></h1>
+    <p>CronWatch monitors scheduled jobs across every platform and alerts you the moment a job misses its window, errors, or stops running.</p>
+    <div class="form-box">
+      <form onsubmit="submitWaitlist(event,'hero')" id="hero-form">
+        <div class="form-row">
+          <input type="email" name="email" placeholder="you@yourcompany.com" required>
+          <button type="submit" id="hero-btn">Join waitlist →</button>
+        </div>
+        <div class="form-msg" id="hero-msg"></div>
+        <div class="form-note">No credit card. No spam. Notify me when it launches.</div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Pain -->
+<div class="pain">
+  <div class="container">
+    <h2 style="font-size:1.4rem;font-weight:700;color:#f7fafc;text-align:center;margin-bottom:1.5rem">The Friday invoice email problem</h2>
+    <p style="text-align:center;color:#64748b;margin-bottom:1.5rem;font-size:0.95rem">It's Monday morning. Your nightly data sync stopped running Thursday. You find out from a user.</p>
+
+    <div class="pain-scenario">
+      <div class="label">Without CronWatch</div>
+      <div class="bad">❌  nightly-sync: last run Thu 3am — then nothing</div>
+      <div class="bad">❌  No alert. No error. Just silence.</div>
+      <div class="bad">❌  Customer: "Why is my dashboard 4 days stale?"</div>
+      <div class="bad">❌  3 hours debugging: it was a permissions change on the DB user</div>
+      <div class="bad">❌  Lost: 4 days of processed data, 1 customer's trust</div>
+    </div>
+
+    <div class="pain-scenario">
+      <div class="label">With CronWatch</div>
+      <div class="good">✅  Thursday 3:05am: "nightly-sync missed its 3am window"</div>
+      <div class="good">✅  Alert in Slack within 5 minutes of missed window</div>
+      <div class="good">✅  Fixed by 3:30am — before any customer noticed</div>
+      <div class="good">✅  Total downtime: 30 minutes, not 4 days</div>
+    </div>
+  </div>
+</div>
+
+<!-- Features -->
+<div class="features">
+  <div class="container">
+    <h2>Stop finding out from customers</h2>
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="icon">⏰</div>
+        <h3>Missed window alerts</h3>
+        <p>Define expected run windows. Get alerted within minutes if a job doesn't run. Never find out from a customer again.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">💥</div>
+        <h3>Error detection</h3>
+        <p>Capture non-zero exit codes and exceptions. Know what failed and why — not just that something stopped running.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🔌</div>
+        <h3>Works everywhere</h3>
+        <p>One ping URL. Add one line to any cron job — shell, Python, Node, Ruby, whatever runs your job.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">📢</div>
+        <h3>Alert anywhere</h3>
+        <p>Slack, email, PagerDuty, webhooks. Deliver alerts to wherever your team actually sees them.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">📈</div>
+        <h3>Run history</h3>
+        <p>See every run: duration, success/failure, exit code. Spot drift before it becomes an incident.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🔒</div>
+        <h3>Simple integration</h3>
+        <p>Heartbeat ping model — add <code style="background:#1a2e1a;padding:1px 5px;border-radius:3px;font-size:0.9em">curl https://cron.watch/ping/your-job-id</code> to the end of your cron. 30 seconds to integrate.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Platforms -->
+<div class="platforms">
+  <div class="container">
+    <h2>Works with every job scheduler</h2>
+    <div class="platform-pills">
+      <span class="pill">crontab</span>
+      <span class="pill">GitHub Actions</span>
+      <span class="pill">Heroku Scheduler</span>
+      <span class="pill">AWS EventBridge</span>
+      <span class="pill">Railway</span>
+      <span class="pill">Render</span>
+      <span class="pill">Fly.io</span>
+      <span class="pill">Cloud Scheduler</span>
+      <span class="pill">Azure Functions</span>
+      <span class="pill">Kubernetes CronJob</span>
+      <span class="pill">Any shell script</span>
+    </div>
+  </div>
+</div>
+
+<!-- Pricing -->
+<div class="pricing">
+  <div class="container">
+    <h2>Simple pricing</h2>
+    <p>Monitor all your jobs. No per-job fees.</p>
+    <div class="price-tag">$9<span style="font-size:1.5rem;color:#4a5568">/mo</span></div>
+    <div class="price-sub">Up to 50 monitored jobs · Unlimited alerts · Email + Slack</div>
+    <p style="color:#4a5568;font-size:0.85rem;margin-top:1rem">Early access pricing for waitlist members</p>
+  </div>
+</div>
+
+<!-- Bottom CTA -->
+<div class="bottom-cta">
+  <div class="container">
+    <h2>Stop finding out from customers</h2>
+    <p style="color:#94a3b8;margin-bottom:2rem">Join the waitlist. First users get 3 months free and help shape the product.</p>
+    <form onsubmit="submitWaitlist(event,'bottom')" id="bottom-form" style="max-width:440px;margin:0 auto">
+      <div class="form-row">
+        <input type="email" name="email" placeholder="you@yourcompany.com" required>
+        <button type="submit" id="bottom-btn">Get early access →</button>
+      </div>
+      <div class="form-msg" id="bottom-msg"></div>
+    </form>
+    <p style="margin-top:1.5rem;font-size:0.85rem;color:#4a5568">
+      <a href="https://lior-seats.github.io/cron-expression-parser/">Parse a cron expression →</a>
+    </p>
+  </div>
+</div>
+
+<footer>
+  © 2026 CronWatch ·
+  <a href="https://lior-seats.github.io/cron-expression-parser/">Free cron expression parser</a>
+</footer>
+
+<script>
+async function submitWaitlist(e, slot) {
+  e.preventDefault();
+  const email = e.target.querySelector('input[type="email"]').value.trim();
+  const btn = document.getElementById(slot + '-btn');
+  const msg = document.getElementById(slot + '-msg');
+  btn.textContent = 'Joining…'; btn.disabled = true;
+  try {
+    const res = await fetch('https://agent-control-plane-w3m9.onrender.com/api/waitlist', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, source: 'cronwatch' })
+    });
+    const data = await res.json();
+    if (data.ok) { msg.style.color = '#68d391'; msg.textContent = '✓ You\'re on the list! We\'ll be in touch.'; e.target.querySelector('input').value = ''; btn.textContent = 'Joined ✓'; }
+    else throw new Error();
+  } catch { msg.style.color = '#f87171'; msg.textContent = 'Something went wrong. Try again.'; btn.textContent = 'Join waitlist →'; btn.disabled = false; }
+}
+
+(function(){try{fetch('https://agent-control-plane-w3m9.onrender.com/api/hit?page=cronwatch-waitlist',{mode:'no-cors'}).catch(()=>{});}catch(e){}})();
+</script>
+</body>
+</html>
