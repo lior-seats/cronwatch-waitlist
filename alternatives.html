@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dead Man's Snitch Alternative: CronWatch Cron Job Monitoring</title>
+  <meta name="description" content="Looking for a Dead Man's Snitch or healthchecks.io alternative? CronWatch is simpler and cheaper: one curl line, $9/month, alerts when your cron job misses its window.">
+  <meta property="og:title" content="Dead Man's Snitch Alternative — CronWatch Cron Job Monitoring">
+  <meta property="og:description" content="One curl line. $9/month. Alerts when your cron job fails silently. Compare CronWatch vs Dead Man's Snitch vs healthchecks.io vs Cronitor.">
+  <meta property="og:url" content="https://lior-seats.github.io/cronwatch-waitlist/alternatives.html">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://lior-seats.github.io/cronwatch-waitlist/alternatives.html">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0f0a; color: #e2e8f0; line-height: 1.6; }
+    a { color: #68d391; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: 780px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* Header nav */
+    .topnav { padding: 0.9rem 1.5rem; border-bottom: 1px solid #1a2e1a; display: flex; align-items: center; gap: 1rem; font-size: 0.85rem; }
+    .topnav .logo { font-weight: 700; color: #68d391; margin-right: auto; font-size: 0.95rem; }
+
+    /* Hero */
+    .hero { background: linear-gradient(160deg, #0a0f0a 0%, #0d1f0d 50%, #0a0f0a 100%); padding: 4rem 1.5rem 3.5rem; text-align: center; border-bottom: 1px solid #1a2e1a; }
+    .eyebrow { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #276749; margin-bottom: 1rem; }
+    .hero h1 { font-size: 2.3rem; font-weight: 800; line-height: 1.2; color: #f7fafc; margin-bottom: 1rem; max-width: 680px; margin-left: auto; margin-right: auto; }
+    .hero h1 em { font-style: normal; color: #68d391; }
+    .hero .sub { font-size: 1.05rem; color: #94a3b8; margin-bottom: 0.5rem; max-width: 520px; margin-left: auto; margin-right: auto; }
+    .hero .price-hook { font-size: 1.1rem; font-weight: 700; color: #68d391; margin-bottom: 2rem; }
+
+    /* Form */
+    .form-wrap { max-width: 440px; margin: 0 auto; }
+    .form-row { display: flex; gap: 0.5rem; }
+    .form-row input[type="email"] { flex: 1; background: #0d1f0d; border: 1px solid #276749; color: #f7fafc; border-radius: 7px; padding: 0.75rem 1rem; font-size: 0.95rem; outline: none; transition: border-color 0.15s; }
+    .form-row input::placeholder { color: #4a5568; }
+    .form-row input:focus { border-color: #38a169; }
+    .form-row button { background: #276749; color: #fff; border: none; padding: 0.75rem 1.5rem; border-radius: 7px; font-weight: 700; font-size: 0.95rem; cursor: pointer; white-space: nowrap; transition: background 0.15s; }
+    .form-row button:hover { background: #2f855a; }
+    .form-note { font-size: 0.8rem; color: #4a5568; margin-top: 0.6rem; text-align: center; }
+    .form-msg { font-size: 0.88rem; margin-top: 0.5rem; text-align: center; min-height: 1.2rem; }
+
+    /* Section */
+    section { padding: 3.5rem 1.5rem; border-bottom: 1px solid #1a2e1a; }
+    section:last-of-type { border-bottom: none; }
+    h2.section-title { font-size: 1.35rem; font-weight: 700; color: #f7fafc; margin-bottom: 0.5rem; }
+    .section-sub { color: #64748b; font-size: 0.95rem; margin-bottom: 2rem; }
+
+    /* Code blocks */
+    .code-group { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+    @media (max-width: 600px) { .code-group { grid-template-columns: 1fr; } .hero h1 { font-size: 1.8rem; } }
+    .code-card { background: #0f1a0f; border: 1px solid #1a2e1a; border-radius: 8px; padding: 1.25rem; }
+    .code-card.highlight { border-color: #276749; }
+    .code-card .label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.6rem; }
+    .code-card.highlight .label { color: #68d391; }
+    .code-card:not(.highlight) .label { color: #4a5568; }
+    .code-card pre { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 0.82rem; color: #a0aec0; white-space: pre-wrap; line-height: 1.7; }
+    .code-card.highlight pre { color: #9ae6b4; }
+
+    /* Comparison table */
+    .comparison-wrap { overflow-x: auto; margin: 1.5rem 0; }
+    .comparison { width: 100%; border-collapse: collapse; min-width: 560px; }
+    .comparison thead tr { background: #0f1a0f; }
+    .comparison th { padding: 0.75rem 1rem; text-align: left; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: 700; }
+    .comparison th:first-child { min-width: 160px; }
+    .comparison th.ours { color: #68d391; background: #0d1f0d; }
+    .comparison td { padding: 0.65rem 1rem; border-bottom: 1px solid #1a2e1a; font-size: 0.9rem; vertical-align: middle; }
+    .comparison tr:last-child td { border-bottom: none; }
+    .comparison tr:hover td { background: #0c160c; }
+    .comparison td.ours { background: #0d1f0d; color: #9ae6b4; font-weight: 600; }
+    .comparison td.feature { color: #a0aec0; font-weight: 600; }
+    .comparison .best { color: #68d391; }
+    .comparison .ok { color: #a0aec0; }
+    .comparison .bad { color: #f87171; }
+    .comparison .price-cell { font-weight: 700; }
+
+    /* FAQ */
+    .faq-list { list-style: none; }
+    .faq-list li { border-bottom: 1px solid #1a2e1a; padding: 1.25rem 0; }
+    .faq-list li:first-child { padding-top: 0; }
+    .faq-list li:last-child { border-bottom: none; }
+    .faq-q { font-weight: 700; color: #f7fafc; margin-bottom: 0.4rem; font-size: 0.97rem; }
+    .faq-a { color: #94a3b8; font-size: 0.92rem; }
+
+    /* Bottom CTA */
+    .bottom-cta { padding: 4rem 1.5rem; text-align: center; background: linear-gradient(160deg, #0a0f0a 0%, #0d1f0d 100%); }
+    .bottom-cta h2 { font-size: 1.5rem; font-weight: 700; color: #f7fafc; margin-bottom: 0.5rem; }
+    .bottom-cta p { color: #94a3b8; margin-bottom: 2rem; }
+
+    /* Trust note */
+    .trust-row { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 1.25rem; }
+    .trust-item { font-size: 0.82rem; color: #4a5568; display: flex; align-items: center; gap: 0.35rem; }
+    .trust-item .check { color: #68d391; }
+
+    footer { text-align: center; padding: 2rem 1.5rem; color: #2d4a2d; font-size: 0.82rem; border-top: 1px solid #0d1207; }
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <span class="logo">📟 CronWatch</span>
+  <a href="https://lior-seats.github.io/cronwatch-waitlist/">Home</a>
+  <a href="https://lior-seats.github.io/cron-expression-parser/">Cron Parser</a>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="container">
+    <div class="eyebrow">CronWatch vs the alternatives</div>
+    <h1>The simplest cron job monitor — a better alternative to <em>Dead Man's Snitch</em>, healthchecks.io, and Cronitor</h1>
+    <p class="sub">Most monitoring tools are complex, over-priced, or both. CronWatch is one curl line.</p>
+    <p class="price-hook">$9/month · 1-minute setup · Alerts when your job misses</p>
+    <div class="form-wrap">
+      <form onsubmit="submitWaitlist(event,'hero')" id="hero-form">
+        <div class="form-row">
+          <input type="email" name="email" placeholder="you@yourcompany.com" required>
+          <button type="submit" id="hero-btn">Get early access →</button>
+        </div>
+        <div class="form-msg" id="hero-msg"></div>
+        <div class="form-note">No credit card. No spam. We'll email you when it launches.</div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Setup comparison -->
+<section>
+  <div class="container">
+    <h2 class="section-title">Setup: 1 line vs everything else</h2>
+    <p class="section-sub">With CronWatch, there's nothing to install, configure, or deploy. Just add one line to the end of your cron job.</p>
+    <div class="code-group">
+      <div class="code-card highlight">
+        <div class="label">✅ CronWatch</div>
+        <pre># Add to the end of your cron job:
+0 3 * * * /scripts/backup.sh \
+  && curl -fsS https://cronwatch.io/ping/YOUR-TOKEN
+
+# That's it. If the job misses,
+# you get an email alert.</pre>
+      </div>
+      <div class="code-card">
+        <div class="label">🔧 Dead Man's Snitch</div>
+        <pre># Requires account setup, webhook config,
+# and adding their snippet:
+0 3 * * * /scripts/backup.sh \
+  && curl https://nosnch.in/YOUR-SNITCH-ID
+
+# Comparable concept, 3x the price</pre>
+      </div>
+      <div class="code-card">
+        <div class="label">🔧 healthchecks.io</div>
+        <pre># Also uses ping URLs — good option
+# but paid plan starts at $20/mo
+0 3 * * * /scripts/backup.sh \
+  && curl -fsS https://hc-ping.com/YOUR-UUID
+
+# Free tier limited to 20 checks</pre>
+      </div>
+      <div class="code-card">
+        <div class="label">🔧 Cronitor</div>
+        <pre># Requires CLI or SDK installation:
+pip install cronitor
+cronitor configure --api-key KEY
+
+# More features, more complexity,
+# starts at $15/mo</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Comparison table -->
+<section style="background:#0d1207">
+  <div class="container">
+    <h2 class="section-title">Side-by-side comparison</h2>
+    <p class="section-sub">CronWatch focuses on one thing: telling you when a cron job stops running.</p>
+    <div class="comparison-wrap">
+      <table class="comparison">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th class="ours">CronWatch</th>
+            <th>Dead Man's Snitch</th>
+            <th>healthchecks.io</th>
+            <th>Cronitor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="feature">Price</td>
+            <td class="ours price-cell">$9/mo</td>
+            <td class="price-cell">$29/mo</td>
+            <td class="price-cell">$20/mo</td>
+            <td class="price-cell">$15/mo</td>
+          </tr>
+          <tr>
+            <td class="feature">Setup</td>
+            <td class="ours"><span class="best">1 curl line</span></td>
+            <td class="ok">1 curl line</td>
+            <td class="ok">1 curl line</td>
+            <td class="bad">CLI / SDK install</td>
+          </tr>
+          <tr>
+            <td class="feature">Alert when job misses</td>
+            <td class="ours"><span class="best">✅ Yes</span></td>
+            <td><span class="best">✅ Yes</span></td>
+            <td><span class="best">✅ Yes</span></td>
+            <td><span class="best">✅ Yes</span></td>
+          </tr>
+          <tr>
+            <td class="feature">Alert within</td>
+            <td class="ours"><span class="best">1–2 min</span></td>
+            <td class="ok">~5 min</td>
+            <td class="ok">1–5 min</td>
+            <td class="ok">~5 min</td>
+          </tr>
+          <tr>
+            <td class="feature">Email alerts</td>
+            <td class="ours"><span class="best">✅ Yes</span></td>
+            <td><span class="best">✅ Yes</span></td>
+            <td><span class="best">✅ Yes</span></td>
+            <td><span class="best">✅ Yes</span></td>
+          </tr>
+          <tr>
+            <td class="feature">Works with any language / OS</td>
+            <td class="ours"><span class="best">✅ Any curl</span></td>
+            <td><span class="best">✅ Any curl</span></td>
+            <td><span class="best">✅ Any curl</span></td>
+            <td class="bad">SDK recommended</td>
+          </tr>
+          <tr>
+            <td class="feature">Grace period config</td>
+            <td class="ours"><span class="best">✅ Yes</span></td>
+            <td><span class="best">✅ Yes</span></td>
+            <td><span class="best">✅ Yes</span></td>
+            <td><span class="best">✅ Yes</span></td>
+          </tr>
+          <tr>
+            <td class="feature">Dashboard</td>
+            <td class="ours"><span class="ok">Simple ✅</span></td>
+            <td class="ok">Full dashboard</td>
+            <td class="ok">Full dashboard</td>
+            <td class="ok">Full dashboard</td>
+          </tr>
+          <tr>
+            <td class="feature">Free tier</td>
+            <td class="ours"><span class="ok">Early access pricing</span></td>
+            <td class="bad">❌ None</td>
+            <td class="ok">20 checks</td>
+            <td class="ok">5 monitors</td>
+          </tr>
+          <tr>
+            <td class="feature">Open source</td>
+            <td class="ours"><span class="ok">Planned</span></td>
+            <td class="bad">❌</td>
+            <td class="best">✅ Yes</td>
+            <td class="bad">❌</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:0.78rem;color:#2d4a2d;margin-top:0.75rem">Prices correct as of October 2026. CronWatch is in early access — final pricing subject to change.</p>
+  </div>
+</section>
+
+<!-- When to choose each -->
+<section>
+  <div class="container">
+    <h2 class="section-title">When to choose CronWatch</h2>
+    <p class="section-sub">CronWatch is not the right tool for everyone. Here's an honest guide.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem">
+      <div style="background:#0d1f0d;border:1px solid #276749;border-radius:8px;padding:1.25rem">
+        <div style="font-weight:700;color:#68d391;margin-bottom:0.75rem">✅ Choose CronWatch if you:</div>
+        <ul style="list-style:none;font-size:0.9rem;color:#9ae6b4;line-height:2">
+          <li>• Want the cheapest option that works</li>
+          <li>• Have a handful of critical cron jobs to monitor</li>
+          <li>• Want email alerts with zero configuration</li>
+          <li>• Run cron on any platform (Linux, GitHub Actions, Heroku)</li>
+          <li>• Prefer simplicity over a feature-heavy dashboard</li>
+        </ul>
+      </div>
+      <div style="background:#1a0f0f;border:1px solid #2e1a1a;border-radius:8px;padding:1.25rem">
+        <div style="font-weight:700;color:#f87171;margin-bottom:0.75rem">Consider alternatives if you:</div>
+        <ul style="list-style:none;font-size:0.9rem;color:#fca5a5;line-height:2">
+          <li>• Need Slack / PagerDuty / webhook integrations</li>
+          <li>• Monitor 50+ jobs with complex dependencies</li>
+          <li>• Need advanced scheduling analytics</li>
+          <li>• Require on-premise deployment</li>
+          <li>• Need SLA-backed uptime guarantees today</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:1rem;font-size:0.88rem;color:#4a5568">For most indie developers monitoring 1–20 cron jobs, CronWatch is the fastest path from "my job failed and I didn't know" to "I got an alert within 2 minutes".</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section style="background:#0d1207">
+  <div class="container">
+    <h2 class="section-title">Frequently asked questions</h2>
+    <ul class="faq-list" style="margin-top:1.5rem">
+      <li>
+        <div class="faq-q">How is CronWatch different from healthchecks.io?</div>
+        <div class="faq-a">Both use the same concept: your cron job pings a URL on success, and you get an alert if the ping doesn't arrive on schedule. The difference is price and simplicity. CronWatch is $9/month with a focus on a minimal, fast setup. healthchecks.io is open source with a more complex free tier (20 checks) and paid tiers starting at $20/month. If you're already on healthchecks.io and happy, no need to switch. If you're evaluating options, CronWatch is cheaper for most single-developer use cases.</div>
+      </li>
+      <li>
+        <div class="faq-q">How is CronWatch different from Dead Man's Snitch?</div>
+        <div class="faq-a">Dead Man's Snitch is a solid product that's been around for years. Their entry pricing is $29/month — more than 3x CronWatch's $9/month. The core functionality is identical: add a curl line to your cron job, get alerted if the job misses. CronWatch targets developers who want simple, affordable monitoring without paying for features they don't use.</div>
+      </li>
+      <li>
+        <div class="faq-q">Does CronWatch work with GitHub Actions scheduled workflows?</div>
+        <div class="faq-a">Yes. Add a final step to your workflow that runs <code style="background:#0f1a0f;padding:1px 5px;border-radius:3px;font-family:monospace;font-size:0.85em">curl -fsS https://cronwatch.io/ping/YOUR-TOKEN</code> only on success. If GitHub Actions stops running your scheduled workflow (it does this silently after ~60 days of repo inactivity), CronWatch will alert you.</div>
+      </li>
+      <li>
+        <div class="faq-q">What happens if my cron job misses a beat?</div>
+        <div class="faq-a">CronWatch checks for expected pings every few minutes. If your job's ping doesn't arrive within the configured grace period (default: 1 hour after the expected run time), you get an email alert. No SMS charges, no per-alert fees — just a plain email so you can go fix it.</div>
+      </li>
+      <li>
+        <div class="faq-q">When does CronWatch launch?</div>
+        <div class="faq-a">We're in early access now. Join the waitlist and you'll be in the first batch of users. Early access pricing is $9/month — locked in for as long as you stay subscribed.</div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Bottom CTA -->
+<div class="bottom-cta">
+  <div class="container">
+    <h2>One curl line. $9/month.<br>Know when your jobs fail.</h2>
+    <p>Join the CronWatch early access waitlist. We'll email you as soon as it's ready.</p>
+    <div class="form-wrap">
+      <form onsubmit="submitWaitlist(event,'bottom')" id="bottom-form">
+        <div class="form-row">
+          <input type="email" name="email" placeholder="you@yourcompany.com" required>
+          <button type="submit" id="bottom-btn">Join waitlist →</button>
+        </div>
+        <div class="form-msg" id="bottom-msg"></div>
+      </form>
+    </div>
+    <div class="trust-row">
+      <span class="trust-item"><span class="check">✓</span> No credit card required</span>
+      <span class="trust-item"><span class="check">✓</span> No spam</span>
+      <span class="trust-item"><span class="check">✓</span> Cancel anytime</span>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a href="https://lior-seats.github.io/cronwatch-waitlist/">CronWatch</a> ·
+  <a href="https://lior-seats.github.io/cron-expression-parser/">Free cron parser</a> ·
+  <a href="https://lior-seats.github.io/blog/cron-job-silent-failures.html">Why cron jobs fail silently</a>
+</footer>
+
+<script>
+async function submitWaitlist(e, loc) {
+  e.preventDefault();
+  const email = e.target.querySelector('input[type="email"]').value.trim();
+  const btn = document.getElementById(loc + '-btn');
+  const msg = document.getElementById(loc + '-msg');
+  btn.textContent = 'Joining…'; btn.disabled = true;
+  try {
+    const res = await fetch('https://agent-control-plane-w3m9.onrender.com/api/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, source: 'cronwatch-alternatives' })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      msg.style.color = '#68d391';
+      msg.textContent = '✓ You\'re on the list! We\'ll email you at launch.';
+      e.target.querySelector('input').value = '';
+      btn.textContent = 'Joined ✓';
+    } else { throw new Error(); }
+  } catch {
+    msg.style.color = '#f87171';
+    msg.textContent = 'Something went wrong. Try again.';
+    btn.textContent = 'Join waitlist →';
+    btn.disabled = false;
+  }
+}
+</script>
+<script>(function(){try{fetch('https://agent-control-plane-w3m9.onrender.com/api/hit?page=cronwatch-alternatives',{mode:'no-cors'}).catch(function(){});}catch(e){}})();</script>
+</body>
+</html>
