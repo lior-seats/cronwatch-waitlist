@@ -186,6 +186,12 @@
     <div class="price-tag">$9<span style="font-size:1.5rem;color:#4a5568">/mo</span></div>
     <div class="price-sub">Up to 50 monitored jobs · Unlimited alerts · Email + Slack</div>
     <p style="color:#4a5568;font-size:0.85rem;margin-top:1rem">Early access pricing for waitlist members</p>
+
+    <div style="margin-top:1.75rem">
+      <button id="subscribe-btn" onclick="subscribeCronwatch()" style="background:#276749;color:#fff;border:none;padding:0.8rem 2rem;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;transition:background 0.15s">Subscribe $9/mo &rarr;</button>
+      <div id="subscribe-msg" style="font-size:0.85rem;margin-top:0.6rem;color:#64748b;min-height:1.2rem"></div>
+      <p style="font-size:0.78rem;color:#2d4a2d;margin-top:0.4rem">Or <a href="#hero-form" style="color:#68d391">join the free waitlist</a> if you prefer to wait for launch</p>
+    </div>
   </div>
 </div>
 
@@ -214,6 +220,36 @@
 </footer>
 
 <script>
+async function subscribeCronwatch() {
+  const btn = document.getElementById('subscribe-btn');
+  const msg = document.getElementById('subscribe-msg');
+  btn.textContent = 'Redirecting…';
+  btn.disabled = true;
+  try {
+    const res = await fetch('https://agent-control-plane-w3m9.onrender.com/api/checkout/cronwatch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    const data = await res.json();
+    if (res.status === 503 || !data.ok) {
+      msg.style.color = '#94a3b8';
+      msg.textContent = 'Payment coming soon — join the waitlist above for now.';
+      btn.textContent = 'Subscribe $9/mo →';
+      btn.disabled = false;
+    } else if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error('No URL');
+    }
+  } catch {
+    msg.style.color = '#94a3b8';
+    msg.textContent = 'Payment coming soon — join the waitlist above for now.';
+    btn.textContent = 'Subscribe $9/mo →';
+    btn.disabled = false;
+  }
+}
+
 async function submitWaitlist(e, slot) {
   e.preventDefault();
   const email = e.target.querySelector('input[type="email"]').value.trim();
